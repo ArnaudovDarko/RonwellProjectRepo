@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "7wbkLtORo9UQbZamGaNPhj4Ar5sV82qyEWzZmW7rG1ni3pxh/awE5QclovglfZFF7DwUdEGuKoQdS3T+EYcr3w==",
+  "success": true,
+  "projectFilePath": "C:\\PluralSightProjects\\RonwellProject\\RonwellProject\\RonwellProject.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\darko\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.26\\microsoft.windowsdesktop.app.ref.6.0.26.nupkg.sha512",
+    "C:\\Users\\darko\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.26\\microsoft.netcore.app.ref.6.0.26.nupkg.sha512",
+    "C:\\Users\\darko\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.26\\microsoft.aspnetcore.app.ref.6.0.26.nupkg.sha512",
+    "C:\\Users\\darko\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.26\\microsoft.netcore.app.host.win-x64.6.0.26.nupkg.sha512"
+  ],
+  "logs": []
+}
