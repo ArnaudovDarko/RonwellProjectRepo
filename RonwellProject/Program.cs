@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using RonwellProject.Helpers;
+
 namespace RonwellProject
 {
     public class Program
@@ -7,7 +10,9 @@ namespace RonwellProject
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=RonwellDB;Trusted_Connection=True;MultipleActiveResultSets=true"));
             builder.Services.AddControllersWithViews();
+            
 
             var app = builder.Build();
 
@@ -28,7 +33,7 @@ namespace RonwellProject
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=EmployeeInfoes}/{action=Index}/{id?}");
 
             app.Run();
         }
