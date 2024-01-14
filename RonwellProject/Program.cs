@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RonwellProject.Helpers;
+using RonwellProject.Interface;
+using RonwellProject.Services;
 
 namespace RonwellProject
 {
@@ -12,7 +14,8 @@ namespace RonwellProject
             // Add services to the container.
             builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=RonwellDB;Trusted_Connection=True;MultipleActiveResultSets=true"));
             builder.Services.AddControllersWithViews();
-            
+            builder.Services.AddScoped<IEmployeeServices, EmployeeServices>();
+
 
             var app = builder.Build();
 
