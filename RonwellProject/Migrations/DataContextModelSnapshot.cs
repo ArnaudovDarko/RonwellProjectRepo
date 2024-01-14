@@ -23,14 +23,11 @@ namespace RonwellProject.Migrations
 
             modelBuilder.Entity("RonwellProject.Models.EmployeeInfo", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EmployeeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeId"));
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -41,7 +38,7 @@ namespace RonwellProject.Migrations
                     b.Property<string>("Salary")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("EmployeeId");
 
                     b.ToTable("Employees");
                 });

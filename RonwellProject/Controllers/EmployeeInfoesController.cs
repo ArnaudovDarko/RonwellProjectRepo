@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RonwellProject.Helpers;
+using RonwellProject.Interface;
 using RonwellProject.Models;
 
 namespace RonwellProject.Controllers
@@ -13,10 +14,12 @@ namespace RonwellProject.Controllers
     public class EmployeeInfoesController : Controller
     {
         private readonly DataContext _context;
+        private IEmployeeServices _employeeService;
 
-        public EmployeeInfoesController(DataContext context)
+        public EmployeeInfoesController(DataContext context, IEmployeeServices employeeService)
         {
             _context = context;
+            _employeeService = employeeService;
         }
 
         // GET: EmployeeInfoes
@@ -30,17 +33,14 @@ namespace RonwellProject.Controllers
         // GET: EmployeeInfoes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Employees == null)
-            {
-                return NotFound();
-            }
+            var employeeInfo = await _employeeService.Details(id);
 
-            var employeeInfo = await _context.Employees
-                .FirstOrDefaultAsync(m => m.Id == id);
             if (employeeInfo == null)
             {
                 return NotFound();
             }
+
+           
 
             return View(employeeInfo);
         }
@@ -53,7 +53,7 @@ namespace RonwellProject.Controllers
 
         // POST: EmployeeInfoes/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,EmployeeId,Name,Position,Salary")] EmployeeInfo employeeInfo)
@@ -68,6 +68,7 @@ namespace RonwellProject.Controllers
         }
 
         // GET: EmployeeInfoes/Edit/5
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Employees == null)
@@ -84,36 +85,19 @@ namespace RonwellProject.Controllers
         }
 
         // POST: EmployeeInfoes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
         [ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> Edit(int id, [Bind("Id,EmployeeId,Name,Position,Salary")] EmployeeInfo employeeInfo)
         {
-            if (id != employeeInfo.Id)
+            if (id != employeeInfo.EmployeeId)
             {
                 return NotFound();
             }
-
+            
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(employeeInfo);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EmployeeInfoExists(employeeInfo.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                await _employeeService.Edit(id, employeeInfo);
+                 return RedirectToAction(nameof(Index));
             }
             return View(employeeInfo);
         }
@@ -127,7 +111,7 @@ namespace RonwellProject.Controllers
             }
 
             var employeeInfo = await _context.Employees
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.EmployeeId == id);
             if (employeeInfo == null)
             {
                 return NotFound();
@@ -155,9 +139,6 @@ namespace RonwellProject.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EmployeeInfoExists(int id)
-        {
-          return (_context.Employees?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+      
     }
 }
