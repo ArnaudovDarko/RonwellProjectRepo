@@ -1,10 +1,16 @@
 ﻿using RonwellProject.Models;
+using RonwellProject.ViewModels;
 
 namespace RonwellProject.Interface
 {
     public interface IEmployeeServices
     {
-        Task<EmployeeInfo> Details(int? id);
-        Task<EmployeeInfo> Edit(int? id, EmployeeInfo employeeInfo);
+        Task<EmployeeInfo> GetDetails(int? id);
+        Task<EmployeeInfo> Upsert(EmployeeInfoVM employeeInfo);
+
+        Task<EmployeeInfo> Delete(int? id);
+        Task<EmployeeInfo> GetEmployeeDetails(int? id);
+        Task<List<EmployeeInfo>> GetEmployees();
+
     }
 }
