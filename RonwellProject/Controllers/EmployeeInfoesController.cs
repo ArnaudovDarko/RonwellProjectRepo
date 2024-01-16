@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using RonwellProject.Helpers;
 using RonwellProject.Interface;
 using RonwellProject.Models;
+using RonwellProject.ViewModels;
 
 namespace RonwellProject.Controllers
 {
@@ -25,22 +26,35 @@ namespace RonwellProject.Controllers
         // GET: EmployeeInfoes
         public async Task<IActionResult> Index()
         {
-              return _context.Employees != null ? 
-                          View(await _context.Employees.ToListAsync()) :
-                          Problem("Entity set 'DataContext.Employees'  is null.");
+            var employeeEntities = await _employeeService.GetEmployees();
+
+            if(employeeEntities !=null && employeeEntities.Count > 0)
+            {
+                var employees = new List<EmployeeInfoVM>();
+
+                employees = employeeEntities.Select(e => new EmployeeInfoVM
+                {
+                    EmployeeId= e.EmployeeId,
+                    Name= e.Name,
+                    Position= e.Position,
+                    Salary = e.Salary   
+                }).ToList();
+
+                return View(employees);
+            }
+
+            return View();
         }
 
         // GET: EmployeeInfoes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            var employeeInfo = await _employeeService.Details(id);
+            var employeeInfo = await _employeeService.GetDetails(id);
 
             if (employeeInfo == null)
             {
                 return NotFound();
-            }
-
-           
+            }          
 
             return View(employeeInfo);
         }
@@ -48,7 +62,8 @@ namespace RonwellProject.Controllers
         // GET: EmployeeInfoes/Create
         public IActionResult Create()
         {
-            return View();
+            var employeeInfoVm = new EmployeeInfoVM();
+            return View(employeeInfoVm);
         }
 
         // POST: EmployeeInfoes/Create
@@ -56,50 +71,51 @@ namespace RonwellProject.Controllers
        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,EmployeeId,Name,Position,Salary")] EmployeeInfo employeeInfo)
+        public async Task<IActionResult> Create(EmployeeInfoVM employeeInfoVM)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(employeeInfo);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                _employeeService.Upsert(employeeInfoVM);
+                return RedirectToAction("Index");
             }
-            return View(employeeInfo);
+            return View(employeeInfoVM);
         }
 
         // GET: EmployeeInfoes/Edit/5
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Employees == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var employeeInfo = await _context.Employees.FindAsync(id);
+            var employeeInfo = await _employeeService.GetEmployeeDetails(id);
             if (employeeInfo == null)
             {
                 return NotFound();
             }
-            return View(employeeInfo);
+
+            var singleEmployeeInfo = new EmployeeInfoVM
+            {
+                EmployeeId = employeeInfo.EmployeeId,
+                Name = employeeInfo.Name,
+                Position = employeeInfo.Position,
+                Salary = employeeInfo.Salary
+            };
+
+            return View(singleEmployeeInfo);
         }
 
         // POST: EmployeeInfoes/Edit/5
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,EmployeeId,Name,Position,Salary")] EmployeeInfo employeeInfo)
+        
+        public async Task<IActionResult> Edit(EmployeeInfoVM employeeInfoVM)
         {
-            if (id != employeeInfo.EmployeeId)
-            {
-                return NotFound();
-            }
-            
-            if (ModelState.IsValid)
-            {
-                await _employeeService.Edit(id, employeeInfo);
-                 return RedirectToAction(nameof(Index));
-            }
-            return View(employeeInfo);
+            await _employeeService.Upsert(employeeInfoVM);
+
+            return RedirectToAction("Index");
         }
 
         // GET: EmployeeInfoes/Delete/5
@@ -136,9 +152,7 @@ namespace RonwellProject.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index");
         }
-
-      
     }
 }

@@ -2,6 +2,7 @@
 using RonwellProject.Helpers;
 using RonwellProject.Interface;
 using RonwellProject.Models;
+using RonwellProject.ViewModels;
 
 namespace RonwellProject.Services
 {
@@ -16,43 +17,71 @@ namespace RonwellProject.Services
             _context = context;
         }
 
-        public async Task<EmployeeInfo> Details(int? id)
+        public async Task<EmployeeInfo> Delete(int? id)
         {
+            var employeeInfo = await _context.Employees.FindAsync(id);
+            if (employeeInfo != null)
+            {
+                _context.Employees.Remove(employeeInfo);
+            }
 
+            await _context.SaveChangesAsync();
 
+            return employeeInfo;
+        }
 
+        public async Task<EmployeeInfo> GetDetails(int? id)
+        {
             var employeeInfo = await _context.Employees
                 .FirstOrDefaultAsync(m => m.EmployeeId == id);
          
+
             return employeeInfo; 
         }
 
-        public async Task<EmployeeInfo> Edit(int? id, EmployeeInfo employeeInfo)
+        public async Task<EmployeeInfo> Upsert(EmployeeInfoVM employeeInfo)
         {
-            try
+            if(employeeInfo.EmployeeId != 0)
             {
-                _context.Update(employeeInfo);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeInfoExists(employeeInfo.EmployeeId))
-                {
-                   
-                }
-                else
-                {
-                    throw;
-                }
-            }
+                var employeeInfoDb = await _context.Employees.FirstOrDefaultAsync(s => s.EmployeeId == employeeInfo.EmployeeId);
 
-            return employeeInfo;
-           
+                if (employeeInfoDb != null)
+                {
+                    employeeInfoDb.Name = employeeInfo.Name;
+                    employeeInfoDb.Position = employeeInfo.Position;
+                    employeeInfoDb.Salary = employeeInfo.Salary;
+
+                    _context.Update(employeeInfoDb);
+                    await _context.SaveChangesAsync();
+                }
+
+                return employeeInfoDb;
+            }
+            else
+            {
+                var newEmployeeInfo = new EmployeeInfo
+                {
+                    Name = employeeInfo.Name,
+                    Position = employeeInfo.Position,
+                    Salary = employeeInfo.Salary
+                };
+
+                await _context.AddAsync(newEmployeeInfo);
+                await _context.SaveChangesAsync();
+
+                return newEmployeeInfo;
+            }
+         
         }
 
-        private bool EmployeeInfoExists(int id)
+        public async Task<List<EmployeeInfo>> GetEmployees()
         {
-            return (_context.Employees?.Any(e => e.EmployeeId == id)).GetValueOrDefault();
+            return await _context.Employees.ToListAsync();
+        }
+
+        public async Task<EmployeeInfo> GetEmployeeDetails(int? id)
+        {
+            return await _context.Employees.FirstOrDefaultAsync(s => s.EmployeeId == id);
         }
     }
 }

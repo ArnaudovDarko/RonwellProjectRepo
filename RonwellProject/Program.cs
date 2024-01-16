@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using RonwellProject.Helpers;
 using RonwellProject.Interface;
 using RonwellProject.Services;
+using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 
 namespace RonwellProject
 {
@@ -12,7 +14,7 @@ namespace RonwellProject
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=RonwellDB;Trusted_Connection=True;MultipleActiveResultSets=true"));
+            builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer("Server=database-1.c1bjkwthlfic.us-east-1.rds.amazonaws.com,1433;Database=ronwelltable;Persist Security Info=False;User ID=admin;Password=ronwelldbtestpass24;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"));
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IEmployeeServices, EmployeeServices>();
 
@@ -29,6 +31,7 @@ namespace RonwellProject
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
 
             app.UseRouting();
 
